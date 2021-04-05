@@ -5,10 +5,12 @@ const addMessageForm = document.getElementById("add-messages-form");
 const userNameInput = document.getElementById("username");
 const messageContentInput = document.getElementById("message-content");
 
-let userName="";
+let userName;
 
 const socket = io();
 socket.on('message', ({ author, content }) => addMessage(author, content));
+socket.on('newUser', ({ author, content }) => addMessage(author, content));
+socket.on('removeUser', ({ author, content }) => addMessage(author, content));
 
 function login(event){
   event.preventDefault();
@@ -41,7 +43,10 @@ function addMessage(author, content){
   message.classList.add("message", "message--received");
   if(author === userName){
     message.classList.add("message--self");
-  }
+  };
+  if(author === 'ChatBot'){
+    message.classList.add("message--chatbot");
+  };
   message.innerHTML = `
     <h3 class="message__author">${author === userName ? 'You' : author }</h3>
     <div class="message__content">
@@ -50,6 +55,7 @@ function addMessage(author, content){
   `;
   messagesList.appendChild(message);
 };
+
 
 loginForm.addEventListener('submit', login);
 addMessageForm.addEventListener('submit', sendMessage);
