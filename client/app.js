@@ -5,7 +5,10 @@ const addMessageForm = document.getElementById("add-messages-form");
 const userNameInput = document.getElementById("username");
 const messageContentInput = document.getElementById("message-content");
 
-let userName;
+let userName="";
+
+const socket = io();
+socket.on('message', ({ author, content }) => addMessage(author, content));
 
 function login(event){
   event.preventDefault();
@@ -13,7 +16,7 @@ function login(event){
     alert("Field is empty");
   }
   else {
-    userNameInput.value = userName;
+    userName = userNameInput.value;
     loginForm.classList.remove("show");
     messagesSection.classList.add("show");
   }
@@ -21,12 +24,14 @@ function login(event){
 
 function sendMessage(event){
   event.preventDefault();
-  if(!messageContentInput.value){
+  let messageContent = messageContentInput.value;
+  if(!messageContent.length){
     alert("Field is empty");
   }
   else {
-    addMessage(userName, messageContentInput.value);
-    messageContentInput.value = '';
+    addMessage(userName, messageContent);
+    socket.emit('message', { author: userName, content: messageContent })
+    messageContentInput.value = ''
   }
 };
 
@@ -37,7 +42,7 @@ function addMessage(author, content){
     message.classList.add("message--self");
   }
   message.innerHTML = `
-    <h3 class="message__author">${userName === author ? 'You' : author }</h3>
+    <h3 class="message__author">${author === userName ? 'You' : author }</h3>
     <div class="message__content">
       ${content}
     </div>
