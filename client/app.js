@@ -19,6 +19,7 @@ function login(event){
     userName = userNameInput.value;
     loginForm.classList.remove("show");
     messagesSection.classList.add("show");
+    socket.emit('newUser', { author: userName, id: socket.id })
   }
 };
 

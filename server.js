@@ -4,6 +4,7 @@ const socket = require('socket.io');
 
 const app = express();
 const messages = [];
+const users = [];
 
 app.use(express.static(path.join(__dirname, '/client')));
 
@@ -23,6 +24,14 @@ io.on('connection', (socket) => {
     console.log('Oh, I\'ve got something from ' + socket.id);
     messages.push(message);
     socket.broadcast.emit('message', message);
+  });
+
+  socket.on('newUser', (newUser) => {
+    console.log('User ' + socket.id + ' just logged in');
+    users.push(newUser);
+    console.log('users to', newUser);
+    console.log('jeden uzytkownik to', newUser.author);
+    //socket.broadcast.emit('newUser', { author: 'ChatBot', content: `${user.author} has joined the conversation!` });
   });
 
   socket.on('disconnect', () => { console.log('Oh, socket ' + socket.id + ' has left') });
